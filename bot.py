@@ -1,22 +1,22 @@
 import yfinance as yf import pandas_ta as ta from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer import robin_stocks.robinhood as r import requests from bs4 import BeautifulSoup import matplotlib.pyplot as plt import pandas as pd import time
 
-Initialize sentiment analyzer
+#Initialize sentiment analyzer
 
 analyzer = SentimentIntensityAnalyzer()
 
-Robinhood login
+#Robinhood login
 
 def robinhood_login(username, password, mfa_code=None): r.login(username, password, mfa_code)
 
-Function to fetch stock data
+#Function to fetch stock data
 
 def get_stock_data(ticker): data = yf.download(ticker, period='30d', interval='1h') data['RSI'] = ta.rsi(data['Close'], length=14) data['EMA'] = ta.ema(data['Close'], length=20) data['SMA50'] = ta.sma(data['Close'], length=50) data['SMA200'] = ta.sma(data['Close'], length=200) data['MACD'] = ta.macd(data['Close'])['MACD_12_26_9'] data['MACD_signal'] = ta.macd(data['Close'])['MACDs_12_26_9'] return data
 
-Function to fetch top gainers from Yahoo Finance
+#Function to fetch top gainers from Yahoo Finance
 
 def get_top_gainers(): url = 'https://finance.yahoo.com/gainers' headers = {'User-Agent': 'Mozilla/5.0'} response = requests.get(url, headers=headers) soup = BeautifulSoup(response.text, 'html.parser') tickers = [] for row in soup.find_all('tr', attrs={'class': 'simpTblRow'})[:10]: ticker = row.find('td', attrs={'aria-label': 'Symbol'}).text tickers.append(ticker) return tickers
 
-Yahoo Finance news scraping
+#Yahoo Finance news scraping
 
 def get_yahoo_finance_sentiment(ticker): url = f'https://finance.yahoo.com/quote/{ticker}/news' headers = {'User-Agent': 'Mozilla/5.0'} response = requests.get(url, headers=headers) soup = BeautifulSoup(response.text, 'html.parser') headlines = [h.text for h in soup.find_all('h3')[:5]]
 
@@ -26,7 +26,7 @@ for headline in headlines:
     sentiment_score += score
 return sentiment_score / len(headlines) if headlines else 0
 
-Reddit scraping (WallStreetBets for stocks, crypto subs for crypto)
+#Reddit scraping (WallStreetBets for stocks, crypto subs for crypto)
 
 def get_reddit_sentiment(ticker): url = f'https://www.reddit.com/search/?q={ticker}' headers = {'User-Agent': 'Mozilla/5.0'} response = requests.get(url, headers=headers) soup = BeautifulSoup(response.text, 'html.parser') posts = [p.text for p in soup.find_all('h3')[:5]]
 
@@ -36,7 +36,7 @@ for post in posts:
     sentiment_score += score
 return sentiment_score / len(posts) if posts else 0
 
-StockTwits sentiment scraping
+#StockTwits sentiment scraping
 
 def get_stocktwits_sentiment(ticker): url = f'https://stocktwits.com/symbol/{ticker}' headers = {'User-Agent': 'Mozilla/5.0'} response = requests.get(url, headers=headers) soup = BeautifulSoup(response.text, 'html.parser') messages = [m.text for m in soup.find_all('p')[:5]]
 
@@ -46,7 +46,7 @@ for msg in messages:
     sentiment_score += score
 return sentiment_score / len(messages) if messages else 0
 
-CryptoPanic for crypto sentiment
+#CryptoPanic for crypto sentiment
 
 def get_cryptopanic_sentiment(ticker): url = f'https://cryptopanic.com/news/{ticker.lower()}' headers = {'User-Agent': 'Mozilla/5.0'} response = requests.get(url, headers=headers) soup = BeautifulSoup(response.text, 'html.parser') articles = [a.text for a in soup.find_all('h2')[:5]]
 
@@ -68,7 +68,7 @@ else:
 
 return sum(sources) / len(sources)
 
-Trade decision logic for stocks and crypto
+#Trade decision logic for stocks and crypto
 
 def trade_decision(ticker, is_crypto=False): sentiment = get_aggregated_sentiment(ticker, is_crypto) if is_crypto: crypto_info = r.crypto.get_crypto_quote(ticker) price = float(crypto_info['ask_price']) allocation = 100  # Example allocation in USD quantity = allocation / price
 
@@ -88,7 +88,7 @@ else:
             print(f"Buying {shares_to_buy} shares of {ticker}")
             r.orders.order_buy_market(ticker, shares_to_buy)
 
-Main Execution Loop
+#Main Execution Loop
 
 mode = 'live'  # Change to 'backtest' for testing
 
