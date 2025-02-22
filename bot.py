@@ -56,7 +56,7 @@ for article in articles:
     sentiment_score += score
 return sentiment_score / len(articles) if articles else 0
 
-Aggregating sentiment from all sources
+#Aggregating sentiment from all sources
 
 def get_aggregated_sentiment(ticker, is_crypto=False): yahoo_sentiment = get_yahoo_finance_sentiment(ticker) reddit_sentiment = get_reddit_sentiment(ticker) stocktwits_sentiment = get_stocktwits_sentiment(ticker) if not is_crypto else 0 cryptopanic_sentiment = get_cryptopanic_sentiment(ticker) if is_crypto else 0
 
